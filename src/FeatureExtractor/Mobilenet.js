@@ -400,7 +400,7 @@ class Mobilenet {
     return this.jointModel;
   }
 
-  async save(callback, name) {
+  async save(callback, name, type = false) {
     if (!this.jointModel) {
       throw new Error("No model found.");
     }
@@ -421,8 +421,11 @@ class Mobilenet {
             mapStringToIndex: this.mapStringToIndex,
           },
         };
-        await saveBlob(data.weightData, `${modelName}.weights.bin`, "application/octet-stream");
-        await saveBlob(JSON.stringify(this.weightsManifest), `${modelName}.json`, "text/plain");
+        if (type === 'json' || type === false) {
+          await saveBlob(JSON.stringify(this.weightsManifest), `${modelName}.json`, "text/plain");
+        } else if (type === 'bin' || type === false) {
+          await saveBlob(data.weightData, `${modelName}.weights.bin`, "application/octet-stream");
+        } 
         if (callback) {
           callback();
         }
